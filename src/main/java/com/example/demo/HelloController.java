@@ -154,4 +154,45 @@ public class HelloController implements CommandLineRunner {
 
         return transaction;
     }
+
+    /* EXPORT ENDPOINTS (JSON & EXCEL/CSV) */
+
+    @GetMapping("/api/export/json")
+    public org.springframework.http.ResponseEntity<Map<String, Object>> exportJson() {
+        Map<String, Object> allData = new HashMap<>();
+        allData.put("messages", messageRepository.findAllByOrderByTimestampAsc());
+        allData.put("transactions", transactionRepository.findAllByOrderByTimestampDesc());
+        allData.put("exportTime", System.currentTimeMillis());
+
+        return org.springframework.http.ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=database_export.json")
+                .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .body(allData);
+    }
+
+    @GetMapping("/api/export/excel")
+    public org.springframework.http.ResponseEntity<byte[]> exportExcel() {
+        List<Transaction> transactions = transactionRepository.findAllByOrderByTimestampDesc();
+        StringBuilder csvContent = new StringBuilder();
+        
+        // CSV Headers (Excel compatible)
+        csvContent.append("Transaction ID,Payer Name,Amount (INR),Payment Method,Status,Timestamp\n");
+        
+        for (Transaction txn : transactions) {
+            csvContent.append(txn.getTxnId()).append(",")
+                      .append(txn.getSender().replace(",", " ")).append(",")
+                      .append(txn.getAmount()).append(",")
+                      .append(txn.getMethod()).append(",")
+                      .append(txn.getStatus()).append(",")
+                      .append(new Date(txn.getTimestamp()).toString().replace(",", " "))
+                      .append("\n");
+        }
+
+        byte[] csvBytes = csvContent.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+
+        return org.springframework.http.ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=transactions_export.csv")
+                .contentType(org.springframework.http.MediaType.parseMediaType("text/csv"))
+                .body(csvBytes);
+    }
 }

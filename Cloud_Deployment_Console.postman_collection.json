@@ -1,0 +1,134 @@
+{
+  "info": {
+    "name": "Cloud Deployment Console",
+    "description": "All API endpoints for the Spring Boot + MongoDB Payment App",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Hello Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/hello",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "hello"]
+        }
+      }
+    },
+    {
+      "name": "2. System Stats",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/system-stats",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "system-stats"]
+        }
+      }
+    },
+    {
+      "name": "3. Get All Messages",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/messages",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "messages"]
+        }
+      }
+    },
+    {
+      "name": "4. Post New Message",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sender\": \"Mukul\",\n  \"text\": \"Hello from Postman!\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/messages",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "messages"]
+        }
+      }
+    },
+    {
+      "name": "5. Get Transaction History",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/payments/history",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "payments", "history"]
+        }
+      }
+    },
+    {
+      "name": "6. Charge Payment (UPI)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sender\": \"Mukul\",\n  \"amount\": \"500\",\n  \"method\": \"UPI\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/payments/charge",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "payments", "charge"]
+        }
+      }
+    },
+    {
+      "name": "7. Charge Payment (Credit Card)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sender\": \"Jane Doe\",\n  \"amount\": \"1200\",\n  \"method\": \"Credit Card\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/payments/charge",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "payments", "charge"]
+        }
+      }
+    }
+  ]
+}
