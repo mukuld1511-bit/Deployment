@@ -1,0 +1,22 @@
+# Production Docker Compose - Used on AWS EC2
+# This file pulls pre-built images from GHCR instead of building locally
+
+services:
+  app:
+    image: ghcr.io/mukuld1511-bit/deployment:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/deploymentdb
+    restart: always
+
+  mongo:
+    image: mongo:7
+    volumes:
+      - mongo-data:/data/db
+    restart: always
+
+volumes:
+  mongo-data:

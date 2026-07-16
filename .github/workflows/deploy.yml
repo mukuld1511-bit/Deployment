@@ -1,11 +1,11 @@
-name: Build and Publish Docker Image
+name: Build, Analyze and Deploy to AWS EC2
 
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  build-and-publish:
+  build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -22,11 +22,15 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Build and Analyze with SonarQube
+    - name: Build with Maven
+      run: mvn clean package -DskipTests
+
+    - name: Analyze with SonarQube
+      if: ${{ secrets.SONAR_TOKEN != '' && secrets.SONAR_HOST_URL != '' }}
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      run: mvn clean verify sonar:sonar -DskipTests
+      run: mvn sonar:sonar -DskipTests
 
     - name: Log in to GitHub Container Registry (GHCR)
       uses: docker/login-action@v3
@@ -35,7 +39,6 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    # Generates lowercase tags and labels for GHCR integration
     - name: Extract metadata for Docker
       id: meta
       uses: docker/metadata-action@v5
@@ -44,10 +47,35 @@ jobs:
         tags: |
           type=raw,value=latest
 
-    - name: Build and Push Docker Image
+    - name: Build and Push Docker Image to GHCR
       uses: docker/build-push-action@v5
       with:
         context: .
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
+
+    - name: Deploy to AWS EC2 via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          # Login to GHCR on EC2
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+          # Go to app directory
+          cd ~/deployment
+
+          # Pull latest docker-compose from repo
+          curl -o docker-compose.yml https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.prod.yml
+
+          # Pull latest images
+          docker compose pull
+
+          # Restart containers with zero downtime
+          docker compose up -d --remove-orphans
+
+          # Clean up old unused images
+          docker image prune -f
