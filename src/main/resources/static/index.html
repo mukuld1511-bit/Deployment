@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Deployment Console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="glow-bg"></div>
+    <div class="container">
+        <!-- HEADER -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="pulse-indicator"></div>
+                <h1>CLOUD DEPLOYMENT CONSOLE</h1>
+            </div>
+            <div class="meta-area">
+                <span class="badge badge-success">NGROK TUNNEL ACTIVE</span>
+                <span id="detected-host" class="host-pill">Detecting url...</span>
+            </div>
+        </header>
+
+        <!-- DASHBOARD GRID -->
+        <main class="dashboard-grid">
+            
+            <!-- CARD 1: SYSTEM HEALTH -->
+            <section class="card stats-card">
+                <div class="card-header">
+                    <h2>SYSTEM DIAGNOSTICS</h2>
+                    <span class="card-subtitle">Live VM Metrics</span>
+                </div>
+                <div class="card-body">
+                    <!-- CPU Metric -->
+                    <div class="metric-container">
+                        <div class="metric-label">
+                            <span>CPU UTILIZATION</span>
+                            <span id="cpu-value" class="metric-value">0.0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="cpu-progress" class="progress-bar-fill progress-cpu" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- RAM Metric -->
+                    <div class="metric-container">
+                        <div class="metric-label">
+                            <span>JVM MEMORY (RAM)</span>
+                            <span id="ram-value" class="metric-value">0 / 0 MB</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="ram-progress" class="progress-bar-fill progress-ram" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- OS / Environment Info -->
+                    <div class="system-details">
+                        <div class="detail-row">
+                            <span class="detail-label">OPERATING SYSTEM</span>
+                            <span id="os-val" class="detail-val">Loading...</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">RUNTIME ENGINE</span>
+                            <span id="java-val" class="detail-val">Loading...</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">VM UPTIME</span>
+                            <span id="uptime-val" class="detail-val">0s</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CARD 2: SHARING & QR CODE -->
+            <section class="card qr-card">
+                <div class="card-header">
+                    <h2>MOBILE REMOTE ACCESS</h2>
+                    <span class="card-subtitle">Scan to Test Remotely</span>
+                </div>
+                <div class="card-body qr-body">
+                    <p class="qr-description">
+                        Scan this QR code with your mobile phone to open the interface. You can interact with the system remotely via the secure ngrok tunnel.
+                    </p>
+                    <div class="qr-container">
+                        <img id="qr-image" src="" alt="Dynamic Tunnel QR Code" style="display: none;">
+                        <div id="qr-placeholder" class="qr-placeholder-spin">Generating QR...</div>
+                    </div>
+                    <div class="copy-url-container">
+                        <input type="text" id="tunnel-url-input" readonly value="Detecting URL...">
+                        <button id="copy-btn">COPY</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CARD 3: DOCKER CONTAINER TOPOLOGY -->
+            <section class="card topology-card">
+                <div class="card-header">
+                    <h2>CONTAINER TOPOLOGY</h2>
+                    <span class="card-subtitle">Docker Compose Network</span>
+                </div>
+                <div class="card-body">
+                    <div class="topology-visualization">
+                        <!-- Internet Node -->
+                        <div class="topo-node topo-internet">
+                            <div class="node-icon">🌐</div>
+                            <span class="node-name">Internet</span>
+                        </div>
+
+                        <div class="topo-arrow">──▶</div>
+
+                        <!-- ngrok service -->
+                        <div class="topo-node topo-service">
+                            <div class="node-status status-active"></div>
+                            <div class="node-icon">⚡</div>
+                            <span class="node-name">deployment-ngrok-1</span>
+                            <span class="node-port">Port 4040</span>
+                        </div>
+
+                        <div class="topo-arrow">──▶</div>
+
+                        <!-- Spring Boot App -->
+                        <div class="topo-node topo-service">
+                            <div class="node-status status-active"></div>
+                            <div class="node-icon">🍃</div>
+                            <span class="node-name">deployment-app-1</span>
+                            <span class="node-port">Port 8080</span>
+                        </div>
+                    </div>
+                    <div class="console-logs-output">
+                        <div class="console-header">
+                            <span>COMPOSE LOGS</span>
+                            <span class="console-dot-green"></span>
+                        </div>
+                        <div class="console-terminal">
+                            <div class="terminal-line"><span class="t-stamp">[system]</span> Network deployment_app-network Created.</div>
+                            <div class="terminal-line"><span class="t-stamp">[system]</span> Container deployment-app-1 Started.</div>
+                            <div class="terminal-line"><span class="t-stamp">[system]</span> Container deployment-ngrok-1 Started.</div>
+                            <div class="terminal-line"><span class="t-stamp">[app]</span> Starting DemoApplication on JVM 17...</div>
+                            <div class="terminal-line"><span class="t-stamp">[app]</span> Tomcat initialized on port 8080 (http)</div>
+                            <div class="terminal-line"><span class="t-stamp">[ngrok]</span> client session established</div>
+                            <div class="terminal-line"><span class="t-stamp">[ngrok]</span> tunnel session status: online</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CARD 4: INTERACTIVE MESSAGE BOARD -->
+            <section class="card messages-card">
+                <div class="card-header">
+                    <h2>REMOTE FEEDBACK WALL</h2>
+                    <span class="card-subtitle">Post messages from any device</span>
+                </div>
+                <div class="card-body messages-body">
+                    <!-- Scrollable messages container -->
+                    <div id="messages-list" class="messages-list">
+                        <!-- Dynamic Messages -->
+                    </div>
+
+                    <!-- Input Form -->
+                    <form id="message-form" class="message-form">
+                        <div class="input-row">
+                            <input type="text" id="sender-input" placeholder="Your Name (e.g. Phone)" required maxlength="20">
+                            <button type="submit" id="send-btn">SEND MESSAGE</button>
+                        </div>
+                        <textarea id="text-input" placeholder="Type a message to display on the main dashboard..." required maxlength="100" rows="2"></textarea>
+                    </form>
+                </div>
+            </section>
+
+        </main>
+        
+        <footer class="app-footer">
+            <p>Powered by <span>Spring Boot (Java)</span>, packaged with <span>Maven</span>, containerized in <span>Docker</span>, exposed using <span>ngrok</span></p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
