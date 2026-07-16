@@ -109,6 +109,9 @@ public class HelloController {
         newMsg.put("timestamp", System.currentTimeMillis());
         messages.add(newMsg);
 
+        // Print message to console/logs
+        System.out.println("[MESSAGE BOARD] Sender: " + sender + " | Text: " + text);
+
         response.put("status", "success");
         response.put("message", "Message posted successfully.");
         return response;
