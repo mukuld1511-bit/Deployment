@@ -18,6 +18,9 @@
 
     <properties>
         <java.version>17</java.version>
+        <sonar.projectKey>demo-project</sonar.projectKey>
+        <sonar.projectName>Demo Project</sonar.projectName>
+        <sonar.host.url>http://localhost:9000</sonar.host.url>
     </properties>
 
     <dependencies>
@@ -43,6 +46,11 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.11.0.3922</version>
             </plugin>
         </plugins>
     </build>

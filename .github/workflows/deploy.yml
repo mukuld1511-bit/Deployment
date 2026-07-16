@@ -22,8 +22,11 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Build with Maven
-      run: mvn clean package -DskipTests
+    - name: Build and Analyze with SonarQube
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      run: mvn clean verify sonar:sonar -DskipTests
 
     - name: Log in to GitHub Container Registry (GHCR)
       uses: docker/login-action@v3
