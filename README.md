@@ -1,6 +1,6 @@
-# Spring Boot Project with Maven, Docker, and ngrok
+# Spring Boot Project with Maven and Docker
 
-This repository contains a complete Java development skeleton configured for Spring Boot, containerized using Docker, managed with Maven, version-controlled with Git, and configured to tunnel externally via ngrok.
+This repository contains a complete Java development skeleton configured for Spring Boot, containerized using Docker, managed with Maven, and version-controlled with Git.
 
 ## Prerequisites
 
@@ -13,36 +13,22 @@ Before running the application, make sure you have installed:
 
 ## Getting Started
 
-### 1. Configure ngrok Authtoken
+### 1. Launch with Docker Compose
 
-To use the ngrok tunneling container, you need a free ngrok authtoken.
-1. Sign up/log in to [ngrok dashboard](https://dashboard.ngrok.com/).
-2. Copy your **Authtoken**.
-3. Create a `.env` file in the root directory of this project:
-   ```env
-   NGROK_AUTHTOKEN=your_actual_ngrok_authtoken_here
-   ```
-
-*(Note: `.env` is ignored by Git, so your token remains private and safe).*
-
-### 2. Launch with Docker Compose
-
-To build the Spring Boot application and start both the app and the ngrok tunnel automatically, run:
+To build the Spring Boot application and start it locally in a container network, run:
 
 ```bash
-docker compose up --build
+docker compose up --build -d
 ```
 
 Docker Compose will:
 1. Build the multi-stage `Dockerfile` (compiling the code inside a Maven build image and packaging it into a minimal JRE container).
 2. Start the Spring Boot application on port `8080`.
-3. Start the ngrok container, linking it to the app, and expose a secure public URL.
 
-### 3. Verify the Connections
+### 2. Verify the Connection
 
-- **Spring Boot App (Local)**: Open [http://localhost:8080/api/hello](http://localhost:8080/api/hello) to see the local response.
-- **ngrok Local Dashboard**: Open [http://localhost:4040](http://localhost:4040). This is the local ngrok status console where you will find your dynamically generated public forwarding URL (e.g., `https://xxxx-xx-xx-xx.ngrok-free.app`).
-- **External Access**: Visit your public ngrok URL with `/api/hello` added at the end (e.g., `https://xxxx-xx-xx-xx.ngrok-free.app/api/hello`) to test access from outside your local network.
+- **Spring Boot App**: Open [http://localhost:8080](http://localhost:8080) to access the interactive Cloud Deployment Console dashboard.
+- **API Endpoint**: Test the REST greeting endpoint directly at [http://localhost:8080/api/hello](http://localhost:8080/api/hello).
 
 ---
 
@@ -57,4 +43,4 @@ mvn clean package
 ```bash
 java -jar target/demo-0.0.1-SNAPSHOT.jar
 ```
-*The app will start at http://localhost:8080/api/hello.*
+*The app will start at http://localhost:8080.*

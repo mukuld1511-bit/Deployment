@@ -77,14 +77,7 @@ public class HelloController {
         long uptimeMs = System.currentTimeMillis() - startupTime;
         stats.put("uptimeSeconds", uptimeMs / 1000);
 
-        // Detect dynamic host & scheme
-        String host = request.getHeader("Host");
-        String scheme = request.getHeader("X-Forwarded-Proto");
-        if (scheme == null) {
-            scheme = request.getScheme();
-        }
-        
-        stats.put("detectedUrl", scheme + "://" + host);
+        stats.put("detectedUrl", "http://localhost:8080");
         stats.put("osName", System.getProperty("os.name"));
         stats.put("osVersion", System.getProperty("os.version"));
         stats.put("javaVersion", System.getProperty("java.version"));

@@ -1,5 +1,4 @@
 // State Variables
-let currentDetectedUrl = "";
 const statsIntervalTime = 3000;
 const messagesIntervalTime = 2500;
 const ledgerIntervalTime = 3000;
@@ -12,12 +11,6 @@ const ramProgressEl = document.getElementById("ram-progress");
 const osValEl = document.getElementById("os-val");
 const javaValEl = document.getElementById("java-val");
 const uptimeValEl = document.getElementById("uptime-val");
-
-const detectedHostEl = document.getElementById("detected-host");
-const tunnelUrlInputEl = document.getElementById("tunnel-url-input");
-const qrImageEl = document.getElementById("qr-image");
-const qrPlaceholderEl = document.getElementById("qr-placeholder");
-const copyBtnEl = document.getElementById("copy-btn");
 
 const messagesListEl = document.getElementById("messages-list");
 const messageFormEl = document.getElementById("message-form");
@@ -57,13 +50,6 @@ async function fetchSystemStats() {
         const uptimeSec = data.uptimeSeconds || 0;
         uptimeValEl.textContent = formatUptime(uptimeSec);
 
-        // Dynamic QR code generation based on host header
-        const detectedUrl = data.detectedUrl;
-        if (detectedUrl && detectedUrl !== currentDetectedUrl) {
-            currentDetectedUrl = detectedUrl;
-            updateQrCode(detectedUrl);
-        }
-
     } catch (error) {
         console.error("Error fetching stats:", error);
         cpuValueEl.textContent = "Offline";
@@ -80,21 +66,6 @@ function formatUptime(seconds) {
     const hrs = Math.floor(mins / 60);
     const rmMs = mins % 60;
     return `${hrs}h ${rmMs}m`;
-}
-
-// Generate QR Code URL from open API
-function updateQrCode(url) {
-    detectedHostEl.textContent = url;
-    tunnelUrlInputEl.value = url;
-    
-    // Use QR Server API to generate QR Code image
-    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(url)}&color=070913&bgcolor=ffffff`;
-    
-    qrImageEl.src = qrApiUrl;
-    qrImageEl.onload = () => {
-        qrPlaceholderEl.style.display = "none";
-        qrImageEl.style.display = "block";
-    };
 }
 
 // Fetch Messages Feed
@@ -245,23 +216,6 @@ function escapeHtml(text) {
     };
     return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 }
-
-// Copy Tunnel URL Clipboard Handler
-copyBtnEl.addEventListener("click", () => {
-    tunnelUrlInputEl.select();
-    tunnelUrlInputEl.setSelectionRange(0, 99999);
-    navigator.clipboard.writeText(tunnelUrlInputEl.value)
-        .then(() => {
-            const oldText = copyBtnEl.textContent;
-            copyBtnEl.textContent = "COPIED!";
-            setTimeout(() => {
-                copyBtnEl.textContent = oldText;
-            }, 1500);
-        })
-        .catch(err => {
-            console.error("Failed to copy text: ", err);
-        });
-});
 
 // Event Listeners & Bootstrapping
 messageFormEl.addEventListener("submit", postMessage);

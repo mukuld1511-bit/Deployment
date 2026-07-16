@@ -19,8 +19,8 @@
                 <h1>CLOUD DEPLOYMENT CONSOLE</h1>
             </div>
             <div class="meta-area">
-                <span class="badge badge-success">NGROK TUNNEL ACTIVE</span>
-                <span id="detected-host" class="host-pill">Detecting url...</span>
+                <span class="badge badge-success">LOCAL DOCKER ACTIVE</span>
+                <span id="detected-host" class="host-pill">http://localhost:8080</span>
             </div>
         </header>
 
@@ -74,28 +74,7 @@
                 </div>
             </section>
 
-            <!-- CARD 2: SHARING & QR CODE -->
-            <section class="card qr-card">
-                <div class="card-header">
-                    <h2>MOBILE REMOTE ACCESS</h2>
-                    <span class="card-subtitle">Scan to Test Remotely</span>
-                </div>
-                <div class="card-body qr-body">
-                    <p class="qr-description">
-                        Scan this QR code with your mobile phone to open the interface. You can interact with the system remotely via the secure ngrok tunnel.
-                    </p>
-                    <div class="qr-container">
-                        <img id="qr-image" src="" alt="Dynamic Tunnel QR Code" style="display: none;">
-                        <div id="qr-placeholder" class="qr-placeholder-spin">Generating QR...</div>
-                    </div>
-                    <div class="copy-url-container">
-                        <input type="text" id="tunnel-url-input" readonly value="Detecting URL...">
-                        <button id="copy-btn">COPY</button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- CARD 3: DOCKER CONTAINER TOPOLOGY -->
+            <!-- CARD 2: DOCKER CONTAINER TOPOLOGY -->
             <section class="card topology-card">
                 <div class="card-header">
                     <h2>CONTAINER TOPOLOGY</h2>
@@ -106,20 +85,10 @@
                         <!-- Internet Node -->
                         <div class="topo-node topo-internet">
                             <div class="node-icon">🌐</div>
-                            <span class="node-name">Internet</span>
+                            <span class="node-name">Client browser</span>
                         </div>
 
-                        <div class="topo-arrow">──▶</div>
-
-                        <!-- ngrok service -->
-                        <div class="topo-node topo-service">
-                            <div class="node-status status-active"></div>
-                            <div class="node-icon">⚡</div>
-                            <span class="node-name">deployment-ngrok-1</span>
-                            <span class="node-port">Port 4040</span>
-                        </div>
-
-                        <div class="topo-arrow">──▶</div>
+                        <div class="topo-arrow">──────▶</div>
 
                         <!-- Spring Boot App -->
                         <div class="topo-node topo-service">
@@ -135,23 +104,21 @@
                             <span class="console-dot-green"></span>
                         </div>
                         <div class="console-terminal">
-                            <div class="terminal-line"><span class="t-stamp">[system]</span> Network deployment_app-network Created.</div>
+                            <div class="terminal-line"><span class="t-stamp">[system]</span> Network default Created.</div>
                             <div class="terminal-line"><span class="t-stamp">[system]</span> Container deployment-app-1 Started.</div>
-                            <div class="terminal-line"><span class="t-stamp">[system]</span> Container deployment-ngrok-1 Started.</div>
                             <div class="terminal-line"><span class="t-stamp">[app]</span> Starting DemoApplication on JVM 17...</div>
                             <div class="terminal-line"><span class="t-stamp">[app]</span> Tomcat initialized on port 8080 (http)</div>
-                            <div class="terminal-line"><span class="t-stamp">[ngrok]</span> client session established</div>
-                            <div class="terminal-line"><span class="t-stamp">[ngrok]</span> tunnel session status: online</div>
+                            <div class="terminal-line"><span class="t-stamp">[app]</span> Application fully loaded, awaiting requests</div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- CARD 4: INTERACTIVE MESSAGE BOARD -->
+            <!-- CARD 3: INTERACTIVE MESSAGE BOARD -->
             <section class="card messages-card">
                 <div class="card-header">
-                    <h2>REMOTE FEEDBACK WALL</h2>
-                    <span class="card-subtitle">Post messages from any device</span>
+                    <h2>FEEDBACK WALL</h2>
+                    <span class="card-subtitle">Post messages locally</span>
                 </div>
                 <div class="card-body messages-body">
                     <!-- Scrollable messages container -->
@@ -162,15 +129,15 @@
                     <!-- Input Form -->
                     <form id="message-form" class="message-form">
                         <div class="input-row">
-                            <input type="text" id="sender-input" placeholder="Your Name (e.g. Phone)" required maxlength="20">
+                            <input type="text" id="sender-input" placeholder="Your Name" required maxlength="20">
                             <button type="submit" id="send-btn">SEND MESSAGE</button>
                         </div>
-                        <textarea id="text-input" placeholder="Type a message to display on the main dashboard..." required maxlength="100" rows="2"></textarea>
+                        <textarea id="text-input" placeholder="Type a message to display on the dashboard..." required maxlength="100" rows="2"></textarea>
                     </form>
                 </div>
             </section>
 
-            <!-- CARD 5: PAYMENT GATEWAY SIMULATOR -->
+            <!-- CARD 4: PAYMENT GATEWAY SIMULATOR -->
             <section class="card payment-card">
                 <div class="card-header">
                     <h2>PAYMENT GATEWAY</h2>
@@ -226,7 +193,7 @@
                 </div>
             </section>
 
-            <!-- CARD 6: TRANSACTION LEDGER -->
+            <!-- CARD 5: TRANSACTION LEDGER -->
             <section class="card ledger-card">
                 <div class="card-header">
                     <h2>TRANSACTION LEDGER</h2>
@@ -242,7 +209,7 @@
         </main>
         
         <footer class="app-footer">
-            <p>Powered by <span>Spring Boot (Java)</span>, packaged with <span>Maven</span>, containerized in <span>Docker</span>, exposed using <span>ngrok</span></p>
+            <p>Powered by <span>Spring Boot (Java)</span>, packaged with <span>Maven</span>, containerized in <span>Docker</span></p>
         </footer>
     </div>
 

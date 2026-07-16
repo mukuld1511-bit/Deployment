@@ -155,7 +155,7 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    position: relative; /* important for overlays */
+    position: relative;
 }
 
 .card:hover {
@@ -262,84 +262,10 @@ body {
     font-weight: 700;
 }
 
-/* QR CODE CARD */
-.qr-body {
-    align-items: center;
-    text-align: center;
-}
-
-.qr-description {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    line-height: 1.5;
-}
-
-.qr-container {
-    width: 180px;
-    height: 180px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    position: relative;
-    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2);
-}
-
-.qr-container img {
-    width: 100%;
-    height: 100%;
-    border-radius: 6px;
-    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.1));
-}
-
-.qr-placeholder-spin {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-}
-
-.copy-url-container {
-    width: 100%;
-    display: flex;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid var(--card-border);
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.copy-url-container input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    padding: 12px;
-    color: var(--text-secondary);
-    font-family: var(--font-body);
-    font-size: 0.8rem;
-    outline: none;
-}
-
-.copy-url-container button {
-    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-    border: none;
-    color: white;
-    padding: 0 20px;
-    font-family: var(--font-heading);
-    font-weight: 700;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: opacity 0.2s;
-}
-
-.copy-url-container button:hover {
-    opacity: 0.9;
-}
-
 /* TOPOLOGY GRAPH VISUALIZATION */
 .topology-visualization {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     padding: 15px 0 5px;
     background: rgba(0, 0, 0, 0.15);
@@ -352,8 +278,8 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    flex: 1;
     position: relative;
+    width: 100px;
 }
 
 .node-icon {
@@ -378,6 +304,7 @@ body {
     font-size: 0.7rem;
     font-weight: 700;
     color: var(--text-primary);
+    text-align: center;
 }
 
 .node-port {
@@ -400,9 +327,8 @@ body {
 }
 
 .topo-arrow {
-    font-size: 0.8rem;
+    font-size: 1rem;
     color: var(--text-muted);
-    letter-spacing: -2px;
 }
 
 /* TERMINAL VIEW */
