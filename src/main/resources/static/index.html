@@ -170,6 +170,75 @@
                 </div>
             </section>
 
+            <!-- CARD 5: PAYMENT GATEWAY SIMULATOR -->
+            <section class="card payment-card">
+                <div class="card-header">
+                    <h2>PAYMENT GATEWAY</h2>
+                    <span class="card-subtitle">Initiate Mock Charge Request</span>
+                </div>
+                <div class="card-body payment-body">
+                    <div id="payment-overlay" class="overlay-spinner" style="display: none;">
+                        <div class="spinner"></div>
+                        <span class="processing-text">Processing Mock Transaction...</span>
+                        <span class="processing-subtext">Contacting Bank Gateway</span>
+                    </div>
+
+                    <form id="payment-form" class="payment-form">
+                        <div class="form-group">
+                            <label for="pay-sender-input">Payer Full Name</label>
+                            <input type="text" id="pay-sender-input" placeholder="e.g. Jane Doe" required maxlength="30">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pay-amount-input">Amount (INR ₹)</label>
+                            <input type="number" id="pay-amount-input" placeholder="e.g. 500" required min="1" max="100000">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Payment Instrument</label>
+                            <div class="instrument-selector">
+                                <label class="radio-card">
+                                    <input type="radio" name="pay-method" value="UPI" checked>
+                                    <div class="radio-label-content">
+                                        <span class="inst-icon">📱</span>
+                                        <span class="inst-name">UPI / GPay</span>
+                                    </div>
+                                </label>
+                                <label class="radio-card">
+                                    <input type="radio" name="pay-method" value="Credit Card">
+                                    <div class="radio-label-content">
+                                        <span class="inst-icon">💳</span>
+                                        <span class="inst-name">Card</span>
+                                    </div>
+                                </label>
+                                <label class="radio-card">
+                                    <input type="radio" name="pay-method" value="NetBanking">
+                                    <div class="radio-label-content">
+                                        <span class="inst-icon">🏦</span>
+                                        <span class="inst-name">Bank</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="pay-submit-btn" class="glow-pay-btn">CONFIRM & SECURE PAY</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- CARD 6: TRANSACTION LEDGER -->
+            <section class="card ledger-card">
+                <div class="card-header">
+                    <h2>TRANSACTION LEDGER</h2>
+                    <span class="card-subtitle">Real-time mock transaction history</span>
+                </div>
+                <div class="card-body ledger-body">
+                    <div id="ledger-list" class="ledger-list">
+                        <!-- Dynamic Ledger Items -->
+                    </div>
+                </div>
+            </section>
+
         </main>
         
         <footer class="app-footer">

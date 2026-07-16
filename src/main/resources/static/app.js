@@ -2,6 +2,7 @@
 let currentDetectedUrl = "";
 const statsIntervalTime = 3000;
 const messagesIntervalTime = 2500;
+const ledgerIntervalTime = 3000;
 
 // DOM Elements
 const cpuValueEl = document.getElementById("cpu-value");
@@ -22,6 +23,12 @@ const messagesListEl = document.getElementById("messages-list");
 const messageFormEl = document.getElementById("message-form");
 const senderInputEl = document.getElementById("sender-input");
 const textInputEl = document.getElementById("text-input");
+
+const ledgerListEl = document.getElementById("ledger-list");
+const paymentFormEl = document.getElementById("payment-form");
+const payOverlayEl = document.getElementById("payment-overlay");
+const paySenderInputEl = document.getElementById("pay-sender-input");
+const payAmountInputEl = document.getElementById("pay-amount-input");
 
 // Fetch and Update System Diagnostics
 async function fetchSystemStats() {
@@ -152,7 +159,82 @@ async function postMessage(event) {
     }
 }
 
-// Escape HTML tags to prevent XSS injection
+// Fetch Transaction History Ledger
+async function fetchTransactionLedger() {
+    try {
+        const response = await fetch("/api/payments/history");
+        if (!response.ok) throw new Error("Failed to fetch payments");
+        const txns = await response.json();
+
+        // Render Ledger
+        // Sort descending so the newest shows up at the top
+        const sortedTxns = [...txns].sort((a, b) => b.timestamp - a.timestamp);
+
+        ledgerListEl.innerHTML = sortedTxns.map(txn => {
+            const statusClass = txn.status.toLowerCase();
+            return `
+                <div class="ledger-item">
+                    <div class="ledger-details">
+                        <div class="ledger-top">
+                            <span class="ledger-id">${txn.txnId}</span>
+                            <span class="ledger-method">${escapeHtml(txn.method)}</span>
+                        </div>
+                        <span class="ledger-sender">${escapeHtml(txn.sender)}</span>
+                    </div>
+                    <div class="ledger-meta">
+                        <span class="ledger-amount">₹${txn.amount}</span>
+                        <span class="status-badge ${statusClass}">${txn.status}</span>
+                    </div>
+                </div>
+            `;
+        }).join("");
+
+    } catch (error) {
+        console.error("Error fetching transactions:", error);
+    }
+}
+
+// Initiate Mock Payment
+async function initiateMockPayment(event) {
+    event.preventDefault();
+    const sender = paySenderInputEl.value.trim();
+    const amount = payAmountInputEl.value.trim();
+    const method = document.querySelector('input[name="pay-method"]:checked').value;
+
+    if (!sender || !amount) return;
+
+    // Show Overlay Spinner
+    payOverlayEl.style.display = "flex";
+
+    // Simulate 1.5 second loading latency for Bank contact
+    setTimeout(async () => {
+        try {
+            const response = await fetch("/api/payments/charge", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ sender, amount, method })
+            });
+
+            if (response.ok) {
+                // Clear inputs
+                paySenderInputEl.value = "";
+                payAmountInputEl.value = "";
+                
+                // Refresh Ledger
+                await fetchTransactionLedger();
+            }
+        } catch (error) {
+            console.error("Payment charge error:", error);
+        } finally {
+            // Hide Overlay Spinner
+            payOverlayEl.style.display = "none";
+        }
+    }, 1500);
+}
+
+// Escape HTML helper
 function escapeHtml(text) {
     const map = {
         '&': '&amp;',
@@ -183,9 +265,12 @@ copyBtnEl.addEventListener("click", () => {
 
 // Event Listeners & Bootstrapping
 messageFormEl.addEventListener("submit", postMessage);
+paymentFormEl.addEventListener("submit", initiateMockPayment);
 
 // Initial Load & Intervals
 fetchSystemStats();
 fetchMessages();
+fetchTransactionLedger();
 setInterval(fetchSystemStats, statsIntervalTime);
 setInterval(fetchMessages, messagesIntervalTime);
+setInterval(fetchTransactionLedger, ledgerIntervalTime);

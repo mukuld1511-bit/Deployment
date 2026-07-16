@@ -12,6 +12,7 @@ public class HelloController {
 
     private final long startupTime = System.currentTimeMillis();
     private final List<Map<String, Object>> messages = new CopyOnWriteArrayList<>();
+    private final List<Map<String, Object>> transactions = new CopyOnWriteArrayList<>();
 
     public HelloController() {
         // Add a default system message
@@ -20,6 +21,22 @@ public class HelloController {
         sysMsg.put("text", "Welcome to the Cloud Deployment Console. ngrok tunnel established successfully.");
         sysMsg.put("timestamp", System.currentTimeMillis());
         messages.add(sysMsg);
+
+        // Pre-populate some historical mock transactions
+        addMockTransaction("Alice Smith", "150.00", "Credit Card", "SUCCESS", System.currentTimeMillis() - 600000);
+        addMockTransaction("Bob Jones", "45.00", "UPI", "SUCCESS", System.currentTimeMillis() - 300000);
+        addMockTransaction("Charlie Brown", "500.00", "NetBanking", "FAILED", System.currentTimeMillis() - 150000);
+    }
+
+    private void addMockTransaction(String sender, String amount, String method, String status, long timestamp) {
+        Map<String, Object> txn = new HashMap<>();
+        txn.put("txnId", "TXN-" + String.format("%06d", new Random().nextInt(1000000)));
+        txn.put("sender", sender);
+        txn.put("amount", amount);
+        txn.put("method", method);
+        txn.put("status", status);
+        txn.put("timestamp", timestamp);
+        transactions.add(txn);
     }
 
     @GetMapping("/api/hello")
@@ -47,10 +64,9 @@ public class HelloController {
         stats.put("totalMemoryMb", totalMemory / (1024 * 1024));
         stats.put("maxMemoryMb", maxMemory / (1024 * 1024));
         
-        // CPU load: check OS load, fallback to simulated load if average returns negative (common in Docker/Windows WSL environments)
+        // CPU load: check OS load, fallback to simulated load if average returns negative
         double systemLoad = ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage();
         if (systemLoad < 0) {
-            // Mock a typical dynamic CPU load between 5% and 25%
             systemLoad = 5.0 + (Math.random() * 20.0);
         } else {
             systemLoad = systemLoad * 100.0;
@@ -61,7 +77,7 @@ public class HelloController {
         long uptimeMs = System.currentTimeMillis() - startupTime;
         stats.put("uptimeSeconds", uptimeMs / 1000);
 
-        // Detect dynamic host & scheme (handles proxying via ngrok/local reverse proxy)
+        // Detect dynamic host & scheme
         String host = request.getHeader("Host");
         String scheme = request.getHeader("X-Forwarded-Proto");
         if (scheme == null) {
@@ -99,7 +115,6 @@ public class HelloController {
 
         // Limit in-memory message history list size
         if (messages.size() > 50) {
-            // Keep the system message at index 0, remove the second element (oldest user message)
             messages.remove(1);
         }
 
@@ -115,5 +130,61 @@ public class HelloController {
         response.put("status", "success");
         response.put("message", "Message posted successfully.");
         return response;
+    }
+
+    /* PAYMENT ENDPOINTS */
+
+    @GetMapping("/api/payments/history")
+    public List<Map<String, Object>> getTransactionHistory() {
+        return transactions;
+    }
+
+    @PostMapping("/api/payments/charge")
+    public Map<String, Object> chargePayment(@RequestBody Map<String, String> payload) {
+        String sender = payload.getOrDefault("sender", "Anonymous").trim();
+        String amount = payload.getOrDefault("amount", "0.00").trim();
+        String method = payload.getOrDefault("method", "UPI").trim();
+
+        if (sender.isEmpty()) {
+            sender = "Anonymous";
+        }
+
+        // Clean amount value
+        try {
+            double amtVal = Double.parseDouble(amount);
+            amount = String.format(Locale.US, "%.2f", amtVal);
+        } catch (NumberFormatException e) {
+            amount = "0.00";
+        }
+
+        // Determine Status: 85% success rate, mock fail if amount is <= 0
+        String status = "SUCCESS";
+        if (Double.parseDouble(amount) <= 0.0) {
+            status = "FAILED";
+        } else if (new Random().nextDouble() > 0.85) {
+            status = "FAILED";
+        }
+
+        String txnId = "TXN-" + String.format("%06d", new Random().nextInt(1000000));
+        long timestamp = System.currentTimeMillis();
+
+        Map<String, Object> transaction = new HashMap<>();
+        transaction.put("txnId", txnId);
+        transaction.put("sender", sender);
+        transaction.put("amount", amount);
+        transaction.put("method", method);
+        transaction.put("status", status);
+        transaction.put("timestamp", timestamp);
+
+        // Limit transactions list size
+        if (transactions.size() > 50) {
+            transactions.remove(0);
+        }
+        transactions.add(transaction);
+
+        // Print transaction details to console terminal logs
+        System.out.println("[PAYMENT TRANSACTION] ID: " + txnId + " | Status: " + status + " | Customer: " + sender + " | Amount: ₹" + amount + " | Method: " + method);
+
+        return transaction;
     }
 }

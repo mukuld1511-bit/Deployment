@@ -155,6 +155,7 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    position: relative; /* important for overlays */
 }
 
 .card:hover {
@@ -578,6 +579,248 @@ body {
     opacity: 0.9;
 }
 
+/* PAYMENT SIMULATOR DETAILS */
+.payment-body {
+    position: relative;
+}
+
+.overlay-spinner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(7, 9, 19, 0.9);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(0, 242, 254, 0.1);
+    border-top-color: var(--accent-teal);
+    border-radius: 50%;
+    animation: spin 1s infinite linear;
+}
+
+.processing-text {
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--accent-teal);
+    letter-spacing: 0.5px;
+}
+
+.processing-subtext {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.payment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.payment-form input[type="text"],
+.payment-form input[type="number"] {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.payment-form input[type="text"]:focus,
+.payment-form input[type="number"]:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 10px rgba(79, 172, 254, 0.15);
+}
+
+.instrument-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.radio-card {
+    position: relative;
+    cursor: pointer;
+}
+
+.radio-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.radio-label-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 8px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    transition: all 0.2s;
+}
+
+.radio-card input[type="radio"]:checked + .radio-label-content {
+    background: rgba(0, 242, 254, 0.04);
+    border-color: var(--accent-teal);
+    box-shadow: 0 0 12px rgba(0, 242, 254, 0.15);
+}
+
+.inst-icon {
+    font-size: 1.25rem;
+}
+
+.inst-name {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+
+.radio-card input[type="radio"]:checked + .radio-label-content .inst-name {
+    color: var(--accent-teal);
+}
+
+.glow-pay-btn {
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    border: none;
+    color: white;
+    padding: 14px;
+    border-radius: 10px;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 15px rgba(185, 39, 252, 0.25);
+    margin-top: 5px;
+}
+
+.glow-pay-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(185, 39, 252, 0.4);
+    opacity: 0.95;
+}
+
+/* TRANSACTION LEDGER CARD */
+.ledger-list {
+    height: 330px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ledger-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    font-size: 0.8rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.ledger-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.ledger-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ledger-id {
+    font-family: monospace;
+    font-weight: 700;
+    color: var(--accent-teal);
+    font-size: 0.75rem;
+}
+
+.ledger-method {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.ledger-sender {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.ledger-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+.ledger-amount {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+.status-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.success {
+    background: rgba(0, 255, 135, 0.08);
+    color: var(--accent-green);
+    border: 1px solid rgba(0, 255, 135, 0.2);
+    box-shadow: 0 0 8px rgba(0, 255, 135, 0.1);
+}
+
+.status-badge.failed {
+    background: rgba(255, 56, 96, 0.08);
+    color: var(--accent-red);
+    border: 1px solid rgba(255, 56, 96, 0.2);
+    box-shadow: 0 0 8px rgba(255, 56, 96, 0.1);
+}
+
 /* FOOTER */
 .app-footer {
     text-align: center;
@@ -613,4 +856,9 @@ body {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
