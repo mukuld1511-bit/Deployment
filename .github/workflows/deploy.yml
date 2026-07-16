@@ -36,12 +36,15 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Set lowercase image name
+      run: echo "IMAGE_NAME=$(echo ghcr.io/${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
     - name: Build and Push Docker Image to GHCR
       uses: docker/build-push-action@v5
       with:
         context: .
         push: true
-        tags: ghcr.io/${{ github.repository }}:latest
+        tags: ${{ env.IMAGE_NAME }}:latest
         labels: |
           org.opencontainers.image.source=${{ github.repositoryUrl }}
 
@@ -57,7 +60,7 @@ jobs:
           cat > docker-compose.yml << 'EOF'
           services:
             app:
-              image: ghcr.io/${{ github.repository }}:latest
+              image: ${{ env.IMAGE_NAME }}:latest
               ports:
                 - "8080:8080"
               depends_on:
