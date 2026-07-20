@@ -1,0 +1,64 @@
+{
+  "family": "spring-boot-app-task",
+  "networkMode": "awsvpc",
+  "containerDefinitions": [
+    {
+      "name": "app",
+      "image": "<AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/<ECR_REPOSITORY_NAME>:latest",
+      "cpu": 256,
+      "memory": 512,
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "SPRING_DATA_MONGODB_URI",
+          "value": "mongodb://127.0.0.1:27017/deploymentdb"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/spring-boot-app",
+          "awslogs-region": "<AWS_REGION>",
+          "awslogs-stream-prefix": "app",
+          "awslogs-create-group": "true"
+        }
+      }
+    },
+    {
+      "name": "mongo",
+      "image": "mongo:7",
+      "cpu": 256,
+      "memory": 512,
+      "portMappings": [
+        {
+          "containerPort": 27017,
+          "hostPort": 27017,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/spring-boot-app",
+          "awslogs-region": "<AWS_REGION>",
+          "awslogs-stream-prefix": "mongo",
+          "awslogs-create-group": "true"
+        }
+      }
+    }
+  ],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/ecsTaskExecutionRole"
+}
