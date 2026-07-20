@@ -44,3 +44,10 @@ mvn clean package
 java -jar target/demo-0.0.1-SNAPSHOT.jar
 ```
 *The app will start at http://localhost:8080.*
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](file:///wsl$/Ubuntu/home/mukul/Deployment/LICENSE) file for details.
+
