@@ -3,7 +3,7 @@
 
 services:
   app:
-    image: ghcr.io/mukuld1511-bit/deployment:latest
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:latest
     ports:
       - "8080:8080"
     depends_on:
