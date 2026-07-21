@@ -57,14 +57,13 @@ jobs:
         context: ./gui
         file: ./gui/Dockerfile
         push: true
-        tags: ${{ env.ECR_REGISTRY }}/payment-gui:latest
+        tags: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:gui
 
     - name: Fill in the placeholders in the ECS task definition
       run: |
         sed -i "s|<AWS_ACCOUNT_ID>|${{ secrets.AWS_ACCOUNT_ID }}|g" task-definition.json
         sed -i "s|<AWS_REGION>|${{ env.AWS_REGION }}|g" task-definition.json
         sed -i "s|<ECR_REPOSITORY_NAME>|${{ env.ECR_REPOSITORY }}|g" task-definition.json
-        sed -i "s|<ECR_REPOSITORY_NAME_GUI>|payment-gui|g" task-definition.json
 
     - name: Fill in the App image ID in the Amazon ECS task definition
       id: render-app-container
@@ -80,7 +79,7 @@ jobs:
       with:
         task-definition: ${{ steps.render-app-container.outputs.task-definition }}
         container-name: gui
-        image: ${{ env.ECR_REGISTRY }}/payment-gui:latest
+        image: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:gui
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2

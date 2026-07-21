@@ -4,7 +4,7 @@
   "containerDefinitions": [
     {
       "name": "gui",
-      "image": "<AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/<ECR_REPOSITORY_NAME_GUI>:latest",
+      "image": "<AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/<ECR_REPOSITORY_NAME>:gui",
       "cpu": 256,
       "memory": 256,
       "portMappings": [
