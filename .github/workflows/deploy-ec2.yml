@@ -23,7 +23,17 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         port: 22
         script: |
-          cd ~/Deployment || cd /home/ubuntu/Deployment || exit 1
+          echo "Checking deployment directory on EC2..."
+          if [ -d "$HOME/Deployment" ]; then
+            cd "$HOME/Deployment"
+          elif [ -d "/home/ubuntu/Deployment" ]; then
+            cd "/home/ubuntu/Deployment"
+          else
+            echo "Cloning repository..."
+            git clone https://github.com/mukuld1511-bit/Deployment.git ~/Deployment
+            cd ~/Deployment
+          fi
+          echo "Pulling latest changes and launching 3-container stack..."
           git pull origin main
           docker compose -f docker-compose.prod.yml up --build -d
           docker compose -f docker-compose.prod.yml ps
