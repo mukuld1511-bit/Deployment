@@ -1,0 +1,88 @@
+name: Deploy to AWS ECS
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECS_SERVICE: spring-boot-service
+  ECS_CLUSTER: spring-boot-cluster
+
+jobs:
+  build-and-deploy-ecs:
+    name: Build & Deploy 3-Container Stack to AWS ECS
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Build Backend Java App with Maven
+      run: mvn clean package -DskipTests
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Log in to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build & Push App Backend Image to Amazon ECR
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: Dockerfile
+        push: true
+        tags: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
+
+    - name: Build & Push Python GUI Image to Amazon ECR
+      uses: docker/build-push-action@v5
+      with:
+        context: ./gui
+        file: ./gui/Dockerfile
+        push: true
+        tags: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_NAME_GUI || 'payment-gui' }}:latest
+
+    - name: Fill Placeholders in task-definition.json
+      run: |
+        sed -i "s|<AWS_ACCOUNT_ID>|${{ secrets.AWS_ACCOUNT_ID }}|g" task-definition.json
+        sed -i "s|<AWS_REGION>|${{ secrets.AWS_REGION }}|g" task-definition.json
+        sed -i "s|<ECR_REPOSITORY_NAME>|${{ secrets.ECR_REPOSITORY_NAME }}|g" task-definition.json
+        sed -i "s|<ECR_REPOSITORY_NAME_GUI>|${{ secrets.ECR_REPOSITORY_NAME_GUI || 'payment-gui' }}|g" task-definition.json
+
+    - name: Render App Container Image in Task Definition
+      id: render-app
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: task-definition.json
+        container-name: app
+        image: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
+
+    - name: Render GUI Container Image in Task Definition
+      id: render-gui
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: ${{ steps.render-app.outputs.task-definition }}
+        container-name: gui
+        image: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_NAME_GUI || 'payment-gui' }}:latest
+
+    - name: Deploy Amazon ECS Task Definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+      with:
+        task-definition: ${{ steps.render-gui.outputs.task-definition }}
+        service: ${{ env.ECS_SERVICE }}
+        cluster: ${{ env.ECS_CLUSTER }}
+        wait-for-service-stability: true
