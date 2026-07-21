@@ -7,8 +7,9 @@ on:
 
 jobs:
   deploy-to-ec2:
-    name: Deploy 3-Container Stack to AWS EC2
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
     - name: Checkout Code
@@ -22,9 +23,7 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         port: 22
         script: |
-          echo "🚀 Pulling latest code and building 3-container stack on AWS EC2..."
-          cd ~/Deployment || cd /home/ubuntu/Deployment || cd /var/www/Deployment || exit 1
+          cd ~/Deployment || cd /home/ubuntu/Deployment || exit 1
           git pull origin main
           docker compose -f docker-compose.prod.yml up --build -d
-          echo "✅ EC2 Deployment successful! Container status:"
           docker compose -f docker-compose.prod.yml ps
