@@ -1,9 +1,25 @@
-# Production Docker Compose - Used on AWS EC2
-# This file pulls pre-built images from GHCR instead of building locally
+# Production Docker Compose - Used on AWS EC2 / Cloud VM
+# Runs all 3 containers with restart policies and environment variables
 
 services:
+  gui:
+    build:
+      context: ./gui
+      dockerfile: Dockerfile
+    container_name: payment-gui-prod
+    ports:
+      - "8501:8501"
+    environment:
+      - PAYMENT_API_URL=http://app:8080
+    depends_on:
+      - app
+    restart: always
+
   app:
-    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: payment-backend-prod
     ports:
       - "8080:8080"
     depends_on:
@@ -14,6 +30,9 @@ services:
 
   mongo:
     image: mongo:7
+    container_name: payment-mongo-prod
+    ports:
+      - "27017:27017"
     volumes:
       - mongo-data:/data/db
     restart: always

@@ -1,33 +1,41 @@
 services:
+  # 1. Python GUI Service (Streamlit Application)
+  gui:
+    build:
+      context: ./gui
+      dockerfile: Dockerfile
+    container_name: payment-gui
+    ports:
+      - "8501:8501"
+    environment:
+      - PAYMENT_API_URL=http://app:8080
+    depends_on:
+      - app
+    restart: unless-stopped
+
+  # 2. Payment Service (Spring Boot REST API)
   app:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: payment-backend
     ports:
       - "8080:8080"
     depends_on:
       - mongo
     environment:
       - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/deploymentdb
+    restart: unless-stopped
 
+  # 3. Database (MongoDB)
   mongo:
     image: mongo:7
+    container_name: payment-mongo
     ports:
-      - "27018:27017"
+      - "27017:27017"
     volumes:
       - mongo-data:/data/db
-
-  sonarqube:
-    image: sonarqube:community
-    ports:
-      - "9000:9000"
-    volumes:
-      - sonarqube_data:/opt/sonarqube/data
-      - sonarqube_extensions:/opt/sonarqube/extensions
-      - sonarqube_logs:/opt/sonarqube/logs
+    restart: unless-stopped
 
 volumes:
   mongo-data:
-  sonarqube_data:
-  sonarqube_extensions:
-  sonarqube_logs:

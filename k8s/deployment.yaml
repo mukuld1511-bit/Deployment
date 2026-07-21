@@ -1,0 +1,115 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: payment-app
+---
+# 1. MongoDB Deployment & Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo
+  namespace: payment-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+      - name: mongo
+        image: mongo:7
+        ports:
+        - containerPort: 27017
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+  namespace: payment-app
+spec:
+  selector:
+    app: mongo
+  ports:
+  - port: 27017
+    targetPort: 27017
+---
+# 2. Payment Service (Spring Boot) Deployment & Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-backend
+  namespace: payment-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-backend
+  template:
+    metadata:
+      labels:
+        app: payment-backend
+    spec:
+      containers:
+      - name: payment-backend
+        image: payment-backend:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_DATA_MONGODB_URI
+          value: mongodb://mongo:27017/deploymentdb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app
+  namespace: payment-app
+spec:
+  selector:
+    app: payment-backend
+  ports:
+  - port: 8080
+    targetPort: 8080
+---
+# 3. Python GUI Deployment & LoadBalancer Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-gui
+  namespace: payment-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-gui
+  template:
+    metadata:
+      labels:
+        app: payment-gui
+    spec:
+      containers:
+      - name: payment-gui
+        image: payment-gui:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8501
+        env:
+        - name: PAYMENT_API_URL
+          value: http://app:8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gui-service
+  namespace: payment-app
+spec:
+  type: LoadBalancer
+  selector:
+    app: payment-gui
+  ports:
+  - port: 8501
+    targetPort: 8501
