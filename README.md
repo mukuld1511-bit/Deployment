@@ -5,7 +5,7 @@
 ![Backend](https://img.shields.io/badge/Backend-Spring%20Boot-brightgreen?style=for-the-badge&logo=springboot)
 ![Database](https://img.shields.io/badge/Database-MongoDB%207-green?style=for-the-badge&logo=mongodb)
 
-A complete DevOps solution comprising a **Python-based GUI**, **Spring Boot Payment REST API Service**, and **MongoDB database**, orchestrated together as 3 Docker containers locally via Docker Compose and ready for Cloud Deployment (AWS / GCP / Azure / Kubernetes).
+A complete DevOps solution comprising a **Python-based GUI**, **Spring Boot Payment REST API Service**, and **MongoDB database**, orchestrated together as 3 Docker containers locally via Docker Compose and ready for Cloud Deployment on **AWS EC2** and **AWS ECS**.
 
 ---
 
@@ -38,9 +38,9 @@ graph TD
 
 ## 🌟 Python GUI Features
 
-Developed using Python and Streamlit, the GUI provides a user-friendly interface consuming all backend REST APIs:
+Developed using Python and Streamlit with a Light Maximalism UI, the GUI provides a user-friendly interface consuming all backend REST APIs:
 
-1. **💳 Charge Payment**: Interactive form to process payments with real-time status output (`SUCCESS` / `FAILED`), transaction IDs, timestamps, and expandable raw JSON inspection.
+1. **💳 Charge Payment**: Interactive form to process payments with real-time status output (`SUCCESS` / `FAILED`), preset amount selector, payment channels (Card, UPI, PayPal, NetBanking), currency conversion, transaction IDs, timestamps, and expandable raw JSON inspection.
 2. **📊 Transaction History & Analytics**: Formatted tables, filter controls (by status and method), KPI metrics (Total Volume, Success Rate), and interactive Plotly distribution charts.
 3. **🖥️ System Health Telemetry**: Live metrics for JVM memory usage, CPU load %, service uptime, and database record counters.
 4. **💬 System Message Board**: View live system logs and post new messages directly to MongoDB.
@@ -90,11 +90,11 @@ docker compose down
 
 ---
 
-## 🌐 Phase 2: Cloud Deployment
+## 🌐 Phase 2: Cloud Deployment (AWS EC2 & ECS)
 
-The application can be deployed to any major cloud provider using Docker Compose or Kubernetes.
+The application can be deployed to Amazon Web Services using Docker Compose on EC2 or AWS ECS (Fargate).
 
-### Option A: Deployment on AWS EC2 / VM
+### Option A: Deployment on AWS EC2
 
 1. **Provision EC2 Instance**:
    - OS: Ubuntu 22.04 LTS
@@ -122,23 +122,15 @@ The application can be deployed to any major cloud provider using Docker Compose
 
 ---
 
-### Option B: Deployment on Kubernetes (AWS EKS / GCP GKE / Azure AKS / Minikube)
+### Option B: Deployment on AWS ECS (Fargate)
 
-1. **Apply Manifests**:
+1. **Register Task Definition**:
    ```bash
-   kubectl apply -f k8s/deployment.yaml
+   aws ecs register-task-definition --cli-input-json file://task-definition.json
    ```
 
-2. **Verify Pods & Services**:
-   ```bash
-   kubectl get pods -n payment-app
-   kubectl get svc -n payment-app
-   ```
-
-3. **Access Public LoadBalancer**:
-   ```bash
-   kubectl get svc gui-service -n payment-app
-   ```
+2. **Deploy ECS Service**:
+   Use the GitHub Actions automated workflow (`.github/workflows/deploy-ecs.yml`) to deploy updates automatically upon git push.
 
 ---
 
