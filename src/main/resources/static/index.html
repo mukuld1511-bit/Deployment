@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Cloud Deployment Console — Monitor your Spring Boot app deployed on AWS ECS Fargate in real-time.">
-    <title>Cloud Deployment Console</title>
+    <meta name="description" content="Payment Gateway Console — Claymorphism UI for DevOps Cloud Deployment on AWS EC2 & ECS.">
+    <title>Payment Gateway Console | DevOps</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,10 +17,10 @@
         <header class="app-header">
             <div class="logo-area">
                 <div class="pulse-indicator"></div>
-                <h1>CLOUD DEPLOYMENT CONSOLE</h1>
+                <h1>PAYMENT GATEWAY CONSOLE</h1>
             </div>
             <div class="meta-area">
-                <span class="badge badge-success">⬡ AWS ECS FARGATE LIVE</span>
+                <span class="badge badge-success">☁️ AWS EC2 & ECS LIVE</span>
                 <span id="detected-host" class="host-pill">http://localhost:8080</span>
             </div>
         </header>
@@ -31,7 +31,7 @@
             <!-- CARD 1: SYSTEM HEALTH -->
             <section class="card stats-card">
                 <div class="card-header">
-                    <h2>SYSTEM DIAGNOSTICS</h2>
+                    <h2>🖥️ SYSTEM DIAGNOSTICS</h2>
                     <span class="card-subtitle">Live VM Metrics</span>
                 </div>
                 <div class="card-body">
@@ -78,7 +78,7 @@
             <!-- CARD 2: DOCKER CONTAINER TOPOLOGY -->
             <section class="card topology-card">
                 <div class="card-header">
-                    <h2>CONTAINER TOPOLOGY</h2>
+                    <h2>🐳 CONTAINER TOPOLOGY</h2>
                     <span class="card-subtitle">Docker Compose Network</span>
                 </div>
                 <div class="card-body">
@@ -86,7 +86,7 @@
                         <!-- Internet Node -->
                         <div class="topo-node topo-internet">
                             <div class="node-icon">🌐</div>
-                            <span class="node-name">Client browser</span>
+                            <span class="node-name">Client Browser</span>
                         </div>
 
                         <div class="topo-arrow">──────▶</div>
@@ -95,7 +95,7 @@
                         <div class="topo-node topo-service">
                             <div class="node-status status-active"></div>
                             <div class="node-icon">🍃</div>
-                            <span class="node-name">deployment-app-1</span>
+                            <span class="node-name">payment-backend</span>
                             <span class="node-port">Port 8080</span>
                         </div>
                     </div>
@@ -105,8 +105,8 @@
                             <span class="console-dot-green"></span>
                         </div>
                         <div class="console-terminal">
-                            <div class="terminal-line"><span class="t-stamp">[system]</span> Network default Created.</div>
-                            <div class="terminal-line"><span class="t-stamp">[system]</span> Container deployment-app-1 Started.</div>
+                            <div class="terminal-line"><span class="t-stamp">[system]</span> Network payment-network Created.</div>
+                            <div class="terminal-line"><span class="t-stamp">[system]</span> Container payment-backend Started.</div>
                             <div class="terminal-line"><span class="t-stamp">[app]</span> Starting DemoApplication on JVM 17...</div>
                             <div class="terminal-line"><span class="t-stamp">[app]</span> Tomcat initialized on port 8080 (http)</div>
                             <div class="terminal-line"><span class="t-stamp">[app]</span> Application fully loaded, awaiting requests</div>
@@ -118,8 +118,8 @@
             <!-- CARD 3: INTERACTIVE MESSAGE BOARD -->
             <section class="card messages-card">
                 <div class="card-header">
-                    <h2>FEEDBACK WALL</h2>
-                    <span class="card-subtitle">Post messages locally</span>
+                    <h2>💬 FEEDBACK WALL</h2>
+                    <span class="card-subtitle">Post messages to MongoDB</span>
                 </div>
                 <div class="card-body messages-body">
                     <!-- Scrollable messages container -->
@@ -138,23 +138,23 @@
                 </div>
             </section>
 
-            <!-- CARD 4: PAYMENT GATEWAY SIMULATOR -->
+            <!-- CARD 4: PAYMENT GATEWAY -->
             <section class="card payment-card">
                 <div class="card-header">
-                    <h2>PAYMENT GATEWAY</h2>
-                    <span class="card-subtitle">Initiate Mock Charge Request</span>
+                    <h2>💳 PAYMENT GATEWAY</h2>
+                    <span class="card-subtitle">Process Mock Payment Transaction</span>
                 </div>
                 <div class="card-body payment-body">
                     <div id="payment-overlay" class="overlay-spinner" style="display: none;">
                         <div class="spinner"></div>
-                        <span class="processing-text">Processing Mock Transaction...</span>
-                        <span class="processing-subtext">Contacting Bank Gateway</span>
+                        <span class="processing-text">Processing Transaction...</span>
+                        <span class="processing-subtext">Contacting Payment Gateway</span>
                     </div>
 
                     <form id="payment-form" class="payment-form">
                         <div class="form-group">
-                            <label for="pay-sender-input">Payer Full Name</label>
-                            <input type="text" id="pay-sender-input" placeholder="e.g. Jane Doe" required maxlength="30">
+                            <label for="pay-sender-input">Customer / Payer Name</label>
+                            <input type="text" id="pay-sender-input" placeholder="e.g. Alex Morgan" required maxlength="30">
                         </div>
 
                         <div class="form-group">
@@ -163,13 +163,13 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Payment Instrument</label>
+                            <label>Payment Channel</label>
                             <div class="instrument-selector">
                                 <label class="radio-card">
                                     <input type="radio" name="pay-method" value="UPI" checked>
                                     <div class="radio-label-content">
-                                        <span class="inst-icon">📱</span>
-                                        <span class="inst-name">UPI / GPay</span>
+                                        <span class="inst-icon">📲</span>
+                                        <span class="inst-name">UPI</span>
                                     </div>
                                 </label>
                                 <label class="radio-card">
@@ -183,13 +183,13 @@
                                     <input type="radio" name="pay-method" value="NetBanking">
                                     <div class="radio-label-content">
                                         <span class="inst-icon">🏦</span>
-                                        <span class="inst-name">Bank</span>
+                                        <span class="inst-name">NetBanking</span>
                                     </div>
                                 </label>
                             </div>
                         </div>
 
-                        <button type="submit" id="pay-submit-btn" class="glow-pay-btn">CONFIRM & SECURE PAY</button>
+                        <button type="submit" id="pay-submit-btn" class="glow-pay-btn">AUTHORIZE & CHARGE PAYMENT</button>
                     </form>
                 </div>
             </section>
@@ -197,8 +197,8 @@
             <!-- CARD 5: TRANSACTION LEDGER -->
             <section class="card ledger-card">
                 <div class="card-header">
-                    <h2>TRANSACTION LEDGER</h2>
-                    <span class="card-subtitle">Real-time mock transaction history</span>
+                    <h2>📊 TRANSACTION LEDGER</h2>
+                    <span class="card-subtitle">Real-time payment audit history</span>
                 </div>
                 <div class="card-body ledger-body">
                     <div id="ledger-list" class="ledger-list">
@@ -210,7 +210,7 @@
         </main>
         
         <footer class="app-footer">
-            <p>Powered by <span>Spring Boot (Java)</span>, packaged with <span>Maven</span>, containerized in <span>Docker</span></p>
+            <p>Powered by <span>Spring Boot</span> | Containerized with <span>Docker</span> | Deployed on <span>AWS EC2 & ECS</span></p>
         </footer>
     </div>
 
