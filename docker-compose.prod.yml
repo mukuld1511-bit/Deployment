@@ -13,6 +13,8 @@ services:
       - PAYMENT_API_URL=http://app:8080
     depends_on:
       - app
+    networks:
+      - payment-network
     restart: always
 
   app:
@@ -26,6 +28,8 @@ services:
       - mongo
     environment:
       - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/deploymentdb
+    networks:
+      - payment-network
     restart: always
 
   mongo:
@@ -35,7 +39,13 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    networks:
+      - payment-network
     restart: always
+
+networks:
+  payment-network:
+    driver: bridge
 
 volumes:
   mongo-data:

@@ -22,34 +22,46 @@ jobs:
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_SSH_KEY }}
         port: 22
+        command_timeout: 30m
         script: |
-          echo "=== Checking deployment directory on EC2 ==="
-          if [ -d "$HOME/Deployment" ]; then
-            cd "$HOME/Deployment"
-          elif [ -d "/home/ubuntu/Deployment" ]; then
-            cd "/home/ubuntu/Deployment"
-          else
-            echo "Cloning repository..."
-            git clone https://github.com/mukuld1511-bit/Deployment.git ~/Deployment
-            cd ~/Deployment
+          set -e
+
+          DEPLOY_DIR="$HOME/Deployment"
+
+          echo "=== Step 1: Setup Deployment Directory ==="
+          if [ ! -d "$DEPLOY_DIR" ]; then
+            echo "Cloning repository for first time..."
+            git clone https://github.com/mukuld1511-bit/Deployment.git "$DEPLOY_DIR"
           fi
 
-          echo "=== Pulling latest code from GitHub ==="
+          cd "$DEPLOY_DIR"
+          echo "Working directory: $(pwd)"
+
+          echo "=== Step 2: Pull Latest Code ==="
           git fetch --all
           git reset --hard origin/main
+          echo "Latest commit: $(git log --oneline -1)"
 
-          echo "=== Stopping existing containers ==="
-          docker compose -f docker-compose.prod.yml down --remove-orphans
+          echo "=== Step 3: Stop Old Containers ==="
+          docker compose -f docker-compose.prod.yml down --remove-orphans || true
 
-          echo "=== Pruning old Docker image cache ==="
-          docker builder prune -f
-          docker image prune -f
+          echo "=== Step 4: Clean Docker Cache ==="
+          docker builder prune -af || true
+          docker image prune -af || true
 
-          echo "=== Rebuilding containers fresh (no cache) ==="
+          echo "=== Step 5: Build Fresh (No Cache) ==="
           docker compose -f docker-compose.prod.yml build --no-cache
 
-          echo "=== Starting updated containers ==="
+          echo "=== Step 6: Start Containers ==="
           docker compose -f docker-compose.prod.yml up -d
 
-          echo "=== Container Status ==="
+          echo "=== Step 7: Wait for Startup ==="
+          sleep 10
+
+          echo "=== Step 8: Container Status ==="
           docker compose -f docker-compose.prod.yml ps
+
+          echo "=== Step 9: Container Logs (last 20 lines each) ==="
+          docker compose -f docker-compose.prod.yml logs --tail=20
+
+          echo "=== Deployment Complete ==="
