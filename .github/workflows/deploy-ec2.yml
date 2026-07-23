@@ -23,7 +23,7 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         port: 22
         script: |
-          echo "Checking deployment directory on EC2..."
+          echo "=== Checking deployment directory on EC2 ==="
           if [ -d "$HOME/Deployment" ]; then
             cd "$HOME/Deployment"
           elif [ -d "/home/ubuntu/Deployment" ]; then
@@ -33,7 +33,23 @@ jobs:
             git clone https://github.com/mukuld1511-bit/Deployment.git ~/Deployment
             cd ~/Deployment
           fi
-          echo "Pulling latest changes and launching 3-container stack..."
-          git pull origin main
-          docker compose -f docker-compose.prod.yml up --build -d
+
+          echo "=== Pulling latest code from GitHub ==="
+          git fetch --all
+          git reset --hard origin/main
+
+          echo "=== Stopping existing containers ==="
+          docker compose -f docker-compose.prod.yml down --remove-orphans
+
+          echo "=== Pruning old Docker image cache ==="
+          docker builder prune -f
+          docker image prune -f
+
+          echo "=== Rebuilding containers fresh (no cache) ==="
+          docker compose -f docker-compose.prod.yml build --no-cache
+
+          echo "=== Starting updated containers ==="
+          docker compose -f docker-compose.prod.yml up -d
+
+          echo "=== Container Status ==="
           docker compose -f docker-compose.prod.yml ps
